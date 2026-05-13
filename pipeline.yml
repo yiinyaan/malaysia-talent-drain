@@ -1,0 +1,5 @@
+name: malaysia-talent-drain
+schedule: daily
+start_date: "2015-01-01"
+default_connections:
+  duckdb: "duckdb-default"
