@@ -18,27 +18,54 @@ Meanwhile, the income gap between states tells a story of two Malaysias:
 
 This pipeline asks: **What is the real cost of Malaysia's talent drain, and which states are most at risk?**
 
-## Architecture
-OpenDOSM API          Frankfurter API       Manual CSV Seed
-(HIES, LFS, CPI)     (MYR/SGD rate)        (KDN citizenship data)
-|                    |                      |
-v                    v                      v
-raw.hies_state      raw.exchange_rate    raw.citizenship_renunciation
-raw.hies_district
-raw.lfs_state
-raw.lfs_monthly
-raw.cpi
-|                    |                      |
-+--------------------+----------------------+
-|
-v
-Staging Layer (data cleaning, type casting, null handling)
-stg_income_inequality | stg_labour_market | stg_cost_of_living | stg_brain_drain
-|
-v
-Analytics Layer (business logic, rankings, trends)
-state_opportunity_index | brain_drain_trend | income_vs_cost
+---
 
+## 🏗️ Architecture
+
+```mermaid
+graph TD
+    subgraph Sources
+        A1[OpenDOSM API]
+        A2[Frankfurter API]
+        A3[Manual CSV Seed]
+    end
+
+    subgraph "Raw Layer (Extract)"
+        B1[raw.hies_state]
+        B2[raw.lfs_state]
+        B3[raw.exchange_rate]
+        B4[raw.citizenship_renunciation]
+    end
+
+    subgraph "Staging Layer (Transform)"
+        C1[stg_income_inequality]
+        C2[stg_labour_market]
+        C3[stg_brain_drain]
+    end
+
+    subgraph "Analytics Layer (Load)"
+        D1[state_opportunity_index]
+        D2[brain_drain_trend]
+        D3[income_vs_cost]
+    end
+
+    %% Connections
+    A1 --> B1
+    A1 --> B2
+    A2 --> B3
+    A3 --> B4
+
+    B1 --> C1
+    B2 --> C2
+    B3 --> C3
+    B4 --> C3
+
+    C1 --> D1
+    C2 --> D2
+    C3 --> D2
+    C3 --> D3
+
+```
 **Stack:** Bruin CLI · DuckDB · Python · OpenDOSM API · Frankfurter API
 
 **Pipeline:** 7 raw assets · 4 staging assets · 3 analytics assets · 41 quality checks — all passing
@@ -166,4 +193,4 @@ This pipeline doesn't solve the problem. But it makes the cost visible. And what
 
 ---
 
-*Built for the Data Engineering Zoomcamp 2026 — Bruin Project Competition*
+*Built for the Bruin Project Competition*
